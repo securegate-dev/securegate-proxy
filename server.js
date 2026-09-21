@@ -78,7 +78,7 @@ const fastify = Fastify({
         if (req.url.startsWith("/api/")) {
           res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
           res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-          res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+          res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
           res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
           res.setHeader("Vary", "Origin");
           if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
@@ -113,6 +113,27 @@ fastify.post("/api/login", async (req, reply) => {
 });
 
 fastify.get("/api/check", async (req) => ({ ok: tokenOk(tokenFromReq(req.raw)) }));
+
+// ── DIAGNOSE-LOG (nur im RAM, max. 800 Einträge, nur mit Login) ──
+const debugLog = [];
+fastify.post("/api/debug", async (req, reply) => {
+  if (!tokenOk(tokenFromReq(req.raw))) return reply.code(401).send({ ok: false });
+  const items = Array.isArray(req.body) ? req.body : [req.body];
+  for (const it of items.slice(0, 100)) {
+    debugLog.push({ t: new Date().toISOString(), ...(typeof it === "object" ? it : { msg: String(it) }) });
+  }
+  while (debugLog.length > 800) debugLog.shift();
+  return { ok: true };
+});
+fastify.get("/api/debug", async (req, reply) => {
+  if (!tokenOk(tokenFromReq(req.raw))) return reply.code(401).send({ ok: false });
+  return debugLog;
+});
+fastify.delete("/api/debug", async (req, reply) => {
+  if (!tokenOk(tokenFromReq(req.raw))) return reply.code(401).send({ ok: false });
+  debugLog.length = 0;
+  return { ok: true };
+});
 
 // ── STATISCHE DATEIEN ──
 fastify.register(fastifyStatic, { root: publicPath, decorateReply: true });
