@@ -1,12 +1,17 @@
 {
-  "name": "securegate-proxy",
-  "version": "1.0.0",
-  "description": "SecureGate Proxy Server",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+  "name": "securegate",
+  "version": "3.0.0",
+  "description": "SecureGate – passwortgeschützter Web-Proxy auf Basis von Scramjet + Wisp",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "@fastify/static": "^9.0.0",
+    "@mercuryworkshop/bare-mux": "^2.1.9",
+    "@mercuryworkshop/libcurl-transport": "^1.5.2",
+    "@mercuryworkshop/scramjet": "1.1.0",
+    "@mercuryworkshop/wisp-js": "^0.4.1",
+    "fastify": "^5.7.4"
   }
 }
