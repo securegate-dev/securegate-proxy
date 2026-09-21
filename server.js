@@ -61,6 +61,7 @@ Object.assign(wisp.options, {
   allow_loopback_ips: process.env.SG_TEST === "1", // nur für lokale Tests
   dns_method: "resolve",
   dns_servers: ["1.1.1.1", "1.0.0.1"],
+  dns_result_order: "ipv4first", // Render hat kein IPv6 nach außen
 });
 
 const fastify = Fastify({
